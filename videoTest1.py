@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 
 vid = cv2.VideoCapture(
-    'D:\\CarND-LaneLines-P1\\test_videos\\challenge.mp4')
+    'D:\\CarND-LaneLines-P1\\test_videos\\solidYellowLeft.mp4')
 current_frame = 0
 img_array = []
 while(True):
@@ -15,8 +15,7 @@ while(True):
         size = (width, height)
         current_frame += 1
         grayscale_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        cv2.imwrite('D:\\CarND-LaneLines-P1\\Output\\grayscale.png',
-                    grayscale_image)
+
         kernel_size = 5
         blur_gray = cv2.GaussianBlur(
             grayscale_image, (kernel_size, kernel_size), 0)
@@ -24,7 +23,6 @@ while(True):
         low_threshold = 50
         high_threshold = 150
         image_edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
-        cv2.imwrite('D:\\CarND-LaneLines-P1\\Output\\Canny.jpg', image_edges)
 
         mask = np.zeros_like(image_edges)
         ignore_mask_color = 255
@@ -34,7 +32,7 @@ while(True):
                               (width, height)]], dtype=np.int32)
         cv2.fillPoly(mask, vertices, ignore_mask_color)
         masked_edges = cv2.bitwise_and(image_edges, mask)
-        cv2.imwrite('D:\\CarND-LaneLines-P1\\Output\\mask.jpg', masked_edges)
+
         rho = 1
         theta = np.pi/180
         threshold = 10
@@ -51,20 +49,19 @@ while(True):
         for line in lines:
             x1, y1, x2, y2 = line[0]
             # calculate slope
-            if x2 - x1 == 0.:  # corner case, avoiding division by 0
-                slope = 999.  # practically infinite slope
+            if x2 - x1 == 0.:  # avoiding division by 0
+                slope = 0
             else:
                 slope = (y2 - y1) / (x2 - x1)
             if abs(slope) > slope_threshold:
                 slopes.append(slope)
                 new_lines.append(line)
-
         # split lines into left and right lane
         right_lines = []
         left_lines = []
         for i, line in enumerate(new_lines):
             x1, y1, x2, y2 = line[0]
-            x_center = image.shape[1] * 0.5
+            x_center = width / 2
             if slopes[i] > 0 and x1 > x_center and x2 > x_center:
                 right_lines.append(line)
             elif slopes[i] < 0 and x1 < x_center and x2 < x_center:
@@ -87,7 +84,6 @@ while(True):
 
         left_lines_x = []
         left_lines_y = []
-
         for line in left_lines:
             x1, y1, x2, y2 = line[0]
 
@@ -96,7 +92,6 @@ while(True):
 
             left_lines_y.append(y1)
             left_lines_y.append(y2)
-
         if len(left_lines_x) > 0:
             left_mid, left_b = np.polyfit(left_lines_x, left_lines_y, 1)
         # get endpoints for the final lines
@@ -109,7 +104,7 @@ while(True):
         left_x1 = (y1 - left_b) / left_mid
         left_x2 = (y2 - left_b) / left_mid
 
-        # float to int
+        # convert to int
         y1 = int(y1)
         y2 = int(y2)
         right_x1 = int(right_x1)
@@ -122,7 +117,7 @@ while(True):
         cv2.line(image_lines, (left_x1, y1), (left_x2, y2), (0, 0, 255), 10)
 
         combo = cv2.addWeighted(image, 1, image_lines, 1, 0)
-        cv2.imwrite('D:\\CarND-LaneLines-P1\\Output\\finalimg.png', combo)
+
         img_array.append(combo)
     else:
         break
