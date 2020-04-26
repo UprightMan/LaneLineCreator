@@ -104,7 +104,7 @@ while(True):
         left_x1 = (y1 - left_b) / left_mid
         left_x2 = (y2 - left_b) / left_mid
 
-        # convert to int
+        # cast to int
         y1 = int(y1)
         y2 = int(y2)
         right_x1 = int(right_x1)
