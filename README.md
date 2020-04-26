@@ -29,16 +29,13 @@ Finally I will look for lanes, since the Canny edges gave me a series of dots I 
 
 <img src="Output\finalimg.jpg"/>
 
-### 2. Identify potential shortcomings with your current pipeline
+### 2. Possible improvments
 
 
-One potential shortcoming would be what would happen when ... 
+One great shortcoming is that the code with struggle to place curved lines, another is that any damage to the road or faded lines might affect the output.
 
-Another shortcoming could be ...
+### 3. Potential Shortcomings
 
+A possible improvement could be done to the way the lines are detected.
 
-### 3. Suggest possible improvements to your pipeline
-
-A possible improvement would be to ...
-
-Another potential improvement could be to ...
+Another could be the way the the final line is calculated.
