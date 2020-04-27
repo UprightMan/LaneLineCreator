@@ -3,8 +3,9 @@ import matplotlib.image as mpimg
 import numpy as np
 import cv2
 
+# Pick the input here
 vid = cv2.VideoCapture(
-    'D:\\CarND-LaneLines-P1\\test_videos\\solidYellowLeft.mp4')
+    'test_videos\\solidWhiteRight.mp4')
 current_frame = 0
 img_array = []
 while(True):
@@ -19,20 +20,20 @@ while(True):
         kernel_size = 5
         blur_gray = cv2.GaussianBlur(
             grayscale_image, (kernel_size, kernel_size), 0)
-
+        # Detect Canny Edges
         low_threshold = 50
         high_threshold = 150
         image_edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
 
         mask = np.zeros_like(image_edges)
         ignore_mask_color = 255
-
+        # Restrict the area in which we look for lanes
         imshape = image.shape
         vertices = np.array([[(0, height), (450, 320), (500, 320),
                               (width, height)]], dtype=np.int32)
         cv2.fillPoly(mask, vertices, ignore_mask_color)
         masked_edges = cv2.bitwise_and(image_edges, mask)
-
+        # params
         rho = 1
         theta = np.pi/180
         threshold = 10
@@ -66,7 +67,7 @@ while(True):
                 right_lines.append(line)
             elif slopes[i] < 0 and x1 < x_center and x2 < x_center:
                 left_lines.append(line)
-
+        # sort the endpoints of the lines into x and y
         right_lines_x = []
         right_lines_y = []
 
@@ -78,7 +79,7 @@ while(True):
 
             right_lines_y.append(y1)
             right_lines_y.append(y2)
-        # sometimes the right_lines_x is empty so this is necessary
+
         if len(right_lines_x) > 0:
             right_mid, right_b = np.polyfit(right_lines_x, right_lines_y, 1)
 
@@ -122,8 +123,9 @@ while(True):
     else:
         break
 vid.release()
+# create the final output video
 vid_out = cv2.VideoWriter(
-    'D:\\CarND-LaneLines-P1\\Output\\output.avi', cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+    'Output\\output.avi', cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
 for i in range(len(img_array)):
     vid_out.write(img_array[i])
 vid_out.release()
